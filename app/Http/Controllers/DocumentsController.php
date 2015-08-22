@@ -6,7 +6,7 @@ use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
-
+use Illuminate\Support\Facades\DB;
 class DocumentsController extends MainController
 {
 
@@ -67,6 +67,51 @@ class DocumentsController extends MainController
                 $this->setResultOk();
                 $this->setDocumentData($document);
             }
+        }
+        return $this->setResponse();
+    }
+
+    /**
+     * Retrieve a list of Documents
+     *
+     * @param String $name
+     * @param Request $request
+     * @return Response
+     */
+
+    public function listDocument($name, Request $request)
+    {
+        $this->setSessionUser($request);
+        if (!$this->isCollection($name)) {
+            $this->setResultError("Collection '{$name}' doesn't exist");
+        } else {
+            $perPage = intval(Input::get('perPage', 10));
+            $start = intval((Input::get('page', 1)-1)*$perPage);
+            $query = urldecode(Input::get('query', ''));
+            $table = "";
+            if(!empty($query)){
+                parse_str($query,$where);
+                $table = ", `data`";
+                $condition = array();
+                foreach($where as $key=>$value){
+                    $condition[] = "(`data`.`key` = '".$key. "' and `data`.`value` LIKE '%".$value."%')";
+                }
+                $query = " and `data`.`document_id` = `documents`.`id` and (".implode(' OR ', $condition).") ";
+            }
+            $data = DB::select('SELECT `documents`.`id` FROM `permissions`, `users`, `documents`, `collections`'.$table.'
+                where `collections`.`name` = :name and `documents`.`collection_id` = `collections`.`id`
+                and ( `documents`.`public` = 1 OR
+                (`users`.`id` = :id and `permissions`.`access` = \'read\' and permissions.document_id = documents.id and
+                (permissions.user_id = users.id or permissions.group_id >= permissions.group_id))) '.$query.'
+                group by documents.id ORDER BY documents.created_at DESC LIMIT :start, :limit',
+                ['id' => $this->user->id, 'name'=>$name, 'start'=> $start, 'limit'=>$perPage]);
+
+            $this->setResultOk();
+
+            $documents = array();
+            foreach($data as $document)
+                $documents[] = Document::whereId($document->id)->first();
+            $this->setDocumentListData($documents);
         }
         return $this->setResponse();
     }

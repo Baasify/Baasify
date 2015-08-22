@@ -25,6 +25,7 @@ $app->get('collection/{name}', ['uses' => 'CollectionsController@getCollection']
 $app->post('collection/{name}', ['uses' => 'CollectionsController@postCollection']);
 $app->delete('collection/{name}', ['uses' => 'CollectionsController@deleteCollection']);
 
+$app->get('document/{name}', ['uses' => 'DocumentsController@listDocument']);
 $app->post('document/{name}', ['uses' => 'DocumentsController@postDocument']);
 $app->get('document/{name}/{id}', ['uses' => 'DocumentsController@getDocument']);
 $app->put('document/{name}/{id}', ['uses' => 'DocumentsController@putDocument']);

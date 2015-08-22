@@ -6,6 +6,7 @@ use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -43,6 +44,9 @@ class Handler extends ExceptionHandler
         if($e instanceof NotFoundHttpException)
         {
             return response()->json(['error'=>'not found'],404);
+        }
+        elseif($e instanceof MethodNotAllowedHttpException){
+            return response()->json(['error'=>'cannot access /'.$request->path().' using '.$request->method()],405);
         }
         return parent::render($request, $e);
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Document extends Model {
 
-    protected $fillable = ['data','user_id','collection_id','private'];
+    protected $fillable = ['data','user_id','collection_id','public'];
 
     public function collection()
     {

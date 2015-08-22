@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use App\Models\Session;
 use App\Models\Collection;
 use App\Models\User;
+use App\Models\File;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 
@@ -186,7 +187,7 @@ class MainController extends BaseController
 
     protected function isDocument($id)
     {
-        return Document::find($id)->first() !== NULL;
+        return Document::whereId($id)->first() !== NULL;
     }
 
     /**
@@ -260,6 +261,24 @@ class MainController extends BaseController
         $this->content['data'] = $this->prepareDocumentData($document);
         foreach ($document->files as $file) {
             $this->content['data']['files'][] = $this->prepareFileData($file);
+        }
+    }
+
+    /**
+     * Add list of document data to response data
+     *
+     * @param Array $documents
+     * @return Void
+     */
+
+    protected function setDocumentListData(Array $documents)
+    {
+        foreach($documents as $document) {
+            $data = $this->prepareDocumentData($document);
+            foreach ($document->files as $file) {
+                $data['files'][] = $this->prepareFileData($file);
+            }
+            $this->content['data'][] = $data;
         }
     }
 

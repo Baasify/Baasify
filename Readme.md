@@ -205,6 +205,8 @@ Documents are used to store data:
 
 #### Retrieve Document
 
+#####Retrieve Document By ID
+
 `GET /document/{collection-name}/{document-id}`
 
 Retrieve data stored in the document requested with any attached files:
@@ -212,6 +214,25 @@ Retrieve data stored in the document requested with any attached files:
 ```
  curl http://localhost:8000/document/myposts/1 \
      -H X-SESSION-ID:1234567890 \
+     -H X-APP-KEY:1234567890
+```
+
+#####Retrieve all Documents in Collection
+
+`GET /document/{collection-name}`
+
+`GET /document/{collection-name}?perPage=10&page=1`
+
+`GET /document/{collection-name}?perPage=10&page=1&query=title%3DMy%20Amazing%20Title`
+
+Retrieve list of documents stored in the collection requested with any attached files, (perPage, page, query) are optional
+parameters (search is performed using MySql `LIKE` ex: `title LIKE '%My Amazing Title%'`):
+
+**Lists only documents with read permission for the logged in user or the group of the user** 
+
+```
+ curl http://localhost:8000/document/myposts
+     -H X-SESSION-ID:1234567890
      -H X-APP-KEY:1234567890
 ```
 
