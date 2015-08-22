@@ -50,8 +50,8 @@ Example:
 
 ```
  curl -X POST http://localhost:8000/user \
-     -d '{"email" : "user@baasify.org", "username" : "baasify", "password" : "baasify"}'
-     -H Content-type:application/json
+     -d '{"email" : "user@baasify.org", "username" : "baasify", "password" : "baasify"}' \
+     -H Content-type:application/json \
      -H X-APP-KEY:1234567890
 ```
 
@@ -62,8 +62,8 @@ Example:
 Example:
 
 ```
- curl -X POST http://localhost:8000/logout
-     -H X-SESSION-ID:1234567890
+ curl -X POST http://localhost:8000/logout \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -74,8 +74,8 @@ Example:
 Example:
 
 ```
- curl http://localhost:8000/me
-     -H X-SESSION-ID:1234567890
+ curl http://localhost:8000/me \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -86,8 +86,8 @@ Example:
 Example:
 
 ```
- curl http://localhost:8000/user/2
-     -H X-SESSION-ID:1234567890
+ curl http://localhost:8000/user/2 \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -98,10 +98,10 @@ Example:
 Change current logged in user password:
 
 ```
-curl -X PUT http://localhost:8000/password
-    -d '{"old_password" : "baasify", "new_password" : "123456"}'
-    -H Content-type:application/json
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/password \
+    -d '{"old_password" : "baasify", "new_password" : "123456"}' \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -112,10 +112,10 @@ curl -X PUT http://localhost:8000/password
 Update current logged in user data:
 
 ```
-curl -X PUT http://localhost:8000/user
-    -d '{"username" : "user", "email" : "new_email@baasify.org", "extra_data" : "my data"}'
-    -H Content-type:application/json
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/user \
+    -d '{"username" : "user", "email" : "new_email@baasify.org", "extra_data" : "my data"}' \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -126,10 +126,10 @@ curl -X PUT http://localhost:8000/user
 Update user data:
 
 ```
-curl -X PUT http://localhost:8000/user/3
-    -d '{"username" : "user", "email" : "new_email@baasify.org", "extra_data" : "my data"}'
-    -H Content-type:application/json
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/user/3 \
+    -d '{"username" : "user", "email" : "new_email@baasify.org", "extra_data" : "my data"}' \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -142,9 +142,9 @@ curl -X PUT http://localhost:8000/user/3
 Update user group:
 
 ```
-curl -X PUT http://localhost:8000/group/1/3
-    -H Content-type:application/json
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/group/1/3 \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -157,8 +157,8 @@ curl -X PUT http://localhost:8000/group/1/3
 Collections are the containers of the documents. To create a new collection:
 
 ```
- curl -X POST http://localhost:8000/collection/myposts
-     -H X-SESSION-ID:1234567890
+ curl -X POST http://localhost:8000/collection/myposts \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -171,8 +171,8 @@ Collections are the containers of the documents. To create a new collection:
 Retrieve name and number of documents under this collection:
 
 ```
- curl http://localhost:8000/collection/myposts
-     -H X-SESSION-ID:1234567890
+ curl http://localhost:8000/collection/myposts \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -185,8 +185,8 @@ Retrieve name and number of documents under this collection:
 Delete collection and all its documents:
 
 ```
- curl -X DELETE http://localhost:8000/collection/myposts
-     -H X-SESSION-ID:1234567890
+ curl -X DELETE http://localhost:8000/collection/myposts \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -197,9 +197,9 @@ Delete collection and all its documents:
 Documents are used to store data:
 
 ```
- curl -X POST http://localhost:8000/document/myposts
-    -d '{"title" : "My Title", "content" : "My Amazing Content"}'
-     -H X-SESSION-ID:1234567890
+ curl -X POST http://localhost:8000/document/myposts \
+    -d '{"title" : "My Title", "content" : "My Amazing Content"}' \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -210,8 +210,8 @@ Documents are used to store data:
 Retrieve data stored in the document requested with any attached files:
 
 ```
- curl http://localhost:8000/document/myposts/1
-     -H X-SESSION-ID:1234567890
+ curl http://localhost:8000/document/myposts/1 \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -222,10 +222,10 @@ Retrieve data stored in the document requested with any attached files:
 Overwrite data stored in the document:
 
 ```
-curl -X PUT http://localhost:8000/document/myposts/1
-    -d '{"title" : "My Title", "content" : "My Updated Amazing Content"}'
-    -H Content-type:application/json
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/document/myposts/1 \
+    -d '{"title" : "My Title", "content" : "My Updated Amazing Content"}' \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -236,8 +236,8 @@ curl -X PUT http://localhost:8000/document/myposts/1
 Delete document and all its files:
 
 ```
- curl -X DELETE http://localhost:8000/document/myposts/1
-     -H X-SESSION-ID:1234567890
+ curl -X DELETE http://localhost:8000/document/myposts/1 \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -250,14 +250,14 @@ Delete document and all its files:
 Grant permission on a document (One of: `read`,`update`,`delete`,`all`):
 
 ```
-curl -X PUT http://localhost:8000/document/myposts/1/grant/read/user/1
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/document/myposts/1/grant/read/user/1 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
 ```
-curl -X PUT http://localhost:8000/document/myposts/1/grant/read/group/3
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/document/myposts/1/grant/read/group/3 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -270,14 +270,14 @@ curl -X PUT http://localhost:8000/document/myposts/1/grant/read/group/3
 Revoke permission on a document (One of: `read`,`update`,`delete`,`all`):
 
 ```
-curl -X DELETE http://localhost:8000/document/myposts/1/revoke/read/user/1
-    -H X-SESSION-ID:1234567890
+curl -X DELETE http://localhost:8000/document/myposts/1/revoke/read/user/1 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
 ```
-curl -X DELETE http://localhost:8000/document/myposts/1/revoke/read/user/1
-    -H X-SESSION-ID:1234567890
+curl -X DELETE http://localhost:8000/document/myposts/1/revoke/read/user/1 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -288,9 +288,9 @@ curl -X DELETE http://localhost:8000/document/myposts/1/revoke/read/user/1
 Create and upload file:
 
 ```
- curl -X POST http://localhost:8000/file
+ curl -X POST http://localhost:8000/file \
      -F file=@image.jpg \
-     -H X-SESSION-ID:1234567890
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -299,9 +299,9 @@ Create and upload file:
 Create and upload file and attach it to a Document:
 
 ```
- curl -X POST http://localhost:8000/file/1
+ curl -X POST http://localhost:8000/file/1 \
      -F file=@image.jpg \
-     -H X-SESSION-ID:1234567890
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -312,8 +312,8 @@ Create and upload file and attach it to a Document:
 Retrieve file as row data:
 
 ```
- curl http://localhost:8000/file/1
-     -H X-SESSION-ID:1234567890
+ curl http://localhost:8000/file/1 \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -324,8 +324,8 @@ Retrieve file as row data:
 Retrieve file details and the attached document if any:
 
 ```
- curl http://localhost:8000/file/1
-     -H X-SESSION-ID:1234567890
+ curl http://localhost:8000/file/1 \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -336,8 +336,8 @@ Retrieve file details and the attached document if any:
 Delete a file:
 
 ```
- curl -X DELETE http://localhost:8000/file/1
-     -H X-SESSION-ID:1234567890
+ curl -X DELETE http://localhost:8000/file/1 \
+     -H X-SESSION-ID:1234567890 \
      -H X-APP-KEY:1234567890
 ```
 
@@ -350,14 +350,14 @@ Delete a file:
 Grant permission on a document (One of: `read`,`update`,`delete`,`all`):
 
 ```
-curl -X PUT http://localhost:8000/file/1/grant/read/user/1
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/file/1/grant/read/user/1 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
 ```
-curl -X PUT http://localhost:8000/file/1/grant/all/group/3
-    -H X-SESSION-ID:1234567890
+curl -X PUT http://localhost:8000/file/1/grant/all/group/3 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
@@ -370,14 +370,14 @@ curl -X PUT http://localhost:8000/file/1/grant/all/group/3
 Revoke permission on a document (One of: `read`,`update`,`delete`,`all`):
 
 ```
-curl -X DELETE http://localhost:8000/file/1/revoke/update/user/1
-    -H X-SESSION-ID:1234567890
+curl -X DELETE http://localhost:8000/file/1/revoke/update/user/1 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
 ```
-curl -X DELETE http://localhost:8000/file/1/revoke/delete/user/1
-    -H X-SESSION-ID:1234567890
+curl -X DELETE http://localhost:8000/file/1/revoke/delete/user/1 \
+    -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
 
