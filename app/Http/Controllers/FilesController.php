@@ -83,7 +83,7 @@ class FilesController extends MainController
         $file = File::find($id);
         if (!$file) {
             $this->setResultError("File is not found");
-        } elseif (!$this->isAllowed($request, 'file', $id, 'read') && !$this->isModerator()) {
+        } elseif (!$file->public && !$this->isModerator() && !$this->isAllowed($request, 'file', $id, 'read')) {
             $this->setResultError("Unauthorized access");
         } else {
             $response = response(file_get_contents($file->path), 200)
@@ -120,6 +120,38 @@ class FilesController extends MainController
         } else {
             $this->setResultOk();
             $this->setFileData($file);
+        }
+        return $this->setResponse();
+    }
+
+    /**
+     * Set File Public
+     *
+     * @param Int $id
+     * @param Request $request
+     * @return Response
+     */
+
+    public function putFilePublic($id, Request $request)
+    {
+        if (!$this->setSessionUser($request)) {
+            $this->setResultError("Guests cannot edit files");
+        } else {
+            $file = File::find($id);
+            $public = Input::get('public');
+            if (!$file) {
+                $this->setResultError("File is not found");
+            } elseif (!$this->isAllowed($request, 'file', $id, 'update') && !$this->isModerator()) {
+                $this->setResultError("Unauthorized access");
+            } elseif ($public === null) {
+                $this->setResultError("Bad Request");
+            } else {
+                $file->public = intval($public);
+                $file->save();
+
+                $this->setResultOk();
+                $this->setFileData($file);
+            }
         }
         return $this->setResponse();
     }

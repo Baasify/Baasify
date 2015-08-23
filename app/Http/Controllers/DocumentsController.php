@@ -55,18 +55,16 @@ class DocumentsController extends MainController
     public function getDocument($name, $id, Request $request)
     {
         $this->setSessionUser($request);
-        if (!$this->isCollection($name)) {
+        $document = Document::whereId($id)->first();
+        if (!$document) {
+            $this->setResultError("Document is not found");
+        } elseif (!$this->isCollection($name)) {
             $this->setResultError("Collection '{$name}' doesn't exist");
-        } elseif (!$this->isAllowed($request, 'document', $id, 'read') && !$this->isModerator()) {
+        } elseif (!$document->public && !$this->isModerator() && !$this->isAllowed($request, 'document', $id, 'read')) {
             $this->setResultError("Unauthorized access");
         } else {
-            $document = Document::find($id);
-            if (!$document) {
-                $this->setResultError("Document is not found");
-            } else {
-                $this->setResultOk();
-                $this->setDocumentData($document);
-            }
+            $this->setResultOk();
+            $this->setDocumentData($document);
         }
         return $this->setResponse();
     }
@@ -149,6 +147,41 @@ class DocumentsController extends MainController
                 foreach ($data as $key => $value) {
                     Data::create(['document_id' => $document->id, 'key' => $key, 'value' => $value]);
                 }
+
+                $this->setResultOk();
+                $this->setDocumentData($document);
+            }
+        }
+        return $this->setResponse();
+    }
+
+    /**
+     * Set Document Public
+     *
+     * @param String $name
+     * @param Int $id
+     * @param Request $request
+     * @return Response
+     */
+
+    public function putDocumentPublic($name, $id, Request $request)
+    {
+        if (!$this->setSessionUser($request)) {
+            $this->setResultError("Guests cannot edit documents");
+        } elseif (!$this->isCollection($name)) {
+            $this->setResultError("Collection '{$name}' doesn't exist");
+        } else {
+            $document = Document::find($id);
+            $public = Input::get('public');
+            if (!$document) {
+                $this->setResultError("Document is not found");
+            } elseif (!$this->isAllowed($request, 'document', $id, 'update') && !$this->isModerator()) {
+                $this->setResultError("Unauthorized access");
+            } elseif ($public === null) {
+                $this->setResultError("Bad Request");
+            } else {
+                $document->public = intval($public);
+                $document->save();
 
                 $this->setResultOk();
                 $this->setDocumentData($document);

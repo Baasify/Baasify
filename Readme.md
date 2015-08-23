@@ -302,6 +302,20 @@ curl -X DELETE http://localhost:8000/document/myposts/1/revoke/read/user/1 \
     -H X-APP-KEY:1234567890
 ```
 
+#### Make Document Public or Private
+
+`PUT /document/{collection-name}/{document-id}`
+
+Documents are private by default. To change them set `public` parameter to `true` or `false` :
+
+```
+curl -X PUT http://localhost:8000/document/myposts/1 \
+    -d '{"public" : true}' \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
+    -H X-APP-KEY:1234567890
+```
+
 #### Upload File
 
 `POST /file`
@@ -398,6 +412,20 @@ curl -X DELETE http://localhost:8000/file/1/revoke/update/user/1 \
 
 ```
 curl -X DELETE http://localhost:8000/file/1/revoke/delete/user/1 \
+    -H X-SESSION-ID:1234567890 \
+    -H X-APP-KEY:1234567890
+```
+
+#### Make File Public or Private
+
+`PUT /file/{file-id}`
+
+Files are private by default. To change them set `public` parameter to `true` or `false` :
+
+```
+curl -X PUT http://localhost:8000/file/1 \
+    -d '{"public" : true}' \
+    -H Content-type:application/json \
     -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```

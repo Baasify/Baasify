@@ -23,7 +23,7 @@ class CreateFilesTable extends Migration {
             $table->string('mime');
             $table->string('size');
             $table->string('path');
-            $table->boolean('private')->default(false);
+            $table->boolean('public')->default(false);
 			$table->timestamps('created_at');
 		});
 	}
