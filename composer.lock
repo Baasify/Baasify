@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fcaf248f2ed934d961db2238b5a3ac8a",
+    "hash": "b6211470d823763952c89dfa414ede2e",
     "packages": [
         {
             "name": "danielstjules/stringy",
@@ -2249,6 +2249,71 @@
                 "environment"
             ],
             "time": "2015-05-30 15:59:26"
+        },
+        {
+            "name": "wrep/notificato",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mac-cain13/notificato.git",
+                "reference": "89080fad67d6dfa97b4ffdfc9b5fb7605a645d91"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mac-cain13/notificato/zipball/89080fad67d6dfa97b4ffdfc9b5fb7605a645d91",
+                "reference": "89080fad67d6dfa97b4ffdfc9b5fb7605a645d91",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "ext-sockets": "*",
+                "ext-spl": "*",
+                "lib-openssl": "*",
+                "php": ">=5.3.3",
+                "psr/log": "1.0.*"
+            },
+            "replace": {
+                "wrep/notificare": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.4.*",
+                "sami/sami": "dev-master"
+            },
+            "suggest": {
+                "wrep/notificato-symfony": "Integrate Notificato into Symfony2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Wrep\\Notificato\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mathijs Kadijk",
+                    "email": "mathijs@wrep.nl"
+                },
+                {
+                    "name": "Rick Pastoor",
+                    "email": "rick@wrep.nl"
+                }
+            ],
+            "description": "Takes care of push notifications in your PHP projects.",
+            "homepage": "https://github.com/mac-cain13/notificato",
+            "keywords": [
+                "apns",
+                "aps",
+                "ios",
+                "notifications",
+                "push",
+                "push notifications",
+                "pushnotifications"
+            ],
+            "time": "2015-05-12 05:53:21"
         }
     ],
     "packages-dev": [
