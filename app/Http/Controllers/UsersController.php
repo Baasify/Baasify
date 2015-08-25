@@ -18,23 +18,29 @@ class UsersController extends MainController
 
     public function postLogin(Request $request)
     {
-        $this->setResultOk();
-        if (!$request->has('email') || !$request->has('password')) {
-            $this->setResultError("email and password are both required");
-        } else {
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
+	    $validator = Validator::make($request->all(), [
+		    'email' => 'required|max:32|email',
+		    'password' => 'required|min:6',
+	    ]);
+
+	    if ($validator->fails()) {
+		    $this->setResultError($validator->messages());
+	    } else {
             $email = $request->get('email');
             $password = $request->get('password');
-
             $user = User::whereEmail($email)->first();
 
             if ($user && Hash::check($password, $user->password)) {
+	            $this->setResultOk();
                 $this->user = $user;
                 $this->setSessionHash();
                 $this->setUserData();
             } else {
                 $this->setResultError("wrong email or password");
             }
-
         }
 
         return $this->setResponse();
@@ -49,12 +55,13 @@ class UsersController extends MainController
 
     public function postLogout(Request $request)
     {
-        $this->setResultOk();
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
 
         if ($this->isSessionEmpty($request)) {
             $this->setResultError("Session token is missing");
         } elseif ($this->destroySessionUser($request)) {
-            $this->content['data'] = "user logged out";
+	        $this->setResultOk("user logged out");
         } else {
             $this->setResultError("Mismatched session token");
         }
@@ -71,6 +78,8 @@ class UsersController extends MainController
 
     public function postRegister(Request $request)
     {
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
 
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:users,username|min:4|max:32',
@@ -81,16 +90,17 @@ class UsersController extends MainController
         if ($validator->fails()) {
             $this->setResultError($validator->messages());
         } else {
-            $this->setResultOk();
             $user = $request->all();
             $user['password'] = Hash::make($user['password']);
             $this->user = User::create($user);
+
+	        unset($user['username'], $user['email'], $user['password']);
+	        foreach($user as $key=>$value)
+		        Profile::create(['key'=>$key,'value'=>$value,'user_id'=>$this->user->id]);
+
+	        $this->setResultOk();
             $this->setSessionHash();
             $this->setUserData();
-
-            unset($user['username'], $user['email'], $user['password']);
-            foreach($user as $key=>$value)
-                Profile::create(['key'=>$key,'value'=>$value,'user_id'=>$this->user->id]);
         }
 
         return $this->setResponse();
@@ -105,10 +115,13 @@ class UsersController extends MainController
 
     public function getMe(Request $request)
     {
-        $this->setResultOk();
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
         if ($this->isSessionEmpty($request)) {
             $this->setResultError("Session token is missing");
         } elseif ($this->setSessionUser($request)) {
+	        $this->setResultOk();
             $this->setUserData();
         } else {
             $this->setResultError("Mismatched session token");
@@ -126,7 +139,9 @@ class UsersController extends MainController
 
     public function getUser($id ,Request $request)
     {
-        $this->setResultOk();
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
         if ($this->isSessionEmpty($request)) {
             $this->setResultError("Session token is missing");
         } elseif ($this->setSessionUser($request)) {
@@ -134,8 +149,9 @@ class UsersController extends MainController
             if(!$this->isAdmin()){
                 $this->setResultError("Unauthorized action");
             } elseif($user===null){
-                $this->setResultError("User not found");
+                $this->setResultError("User not found", 404);
             } else {
+	            $this->setResultOk();
                 $this->setUserData($user);
             }
         } else {
@@ -153,18 +169,22 @@ class UsersController extends MainController
 
     public function putPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'old_password' => 'required',
-            'new_password' => 'required|min:6',
-        ]);
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
 
-        $this->setResultOk();
-        if($validator->fails()){
-            $this->setResultError($validator->messages());
-        }elseif ($this->isSessionEmpty($request)) {
-            $this->setResultError("Session token is missing");
-        } elseif ($this->setSessionUser($request)) {
-            if (Hash::check($request['old_password'], $this->user->password)) {
+	    if ($this->isSessionEmpty($request)) {
+		    $this->setResultError("Session token is missing");
+	    } elseif ($this->setSessionUser($request)) {
+
+		    $validator = Validator::make($request->all(), [
+			    'old_password' => 'required|min:6',
+			    'new_password' => 'required|min:6',
+		    ]);
+
+		    if($validator->fails()){
+			    $this->setResultError($validator->messages());
+		    } elseif (Hash::check($request['old_password'], $this->user->password)) {
+			    $this->setResultOk();
                 $this->user->password = Hash::make($request['new_password']);
                 $this->user->save();
             } else {
@@ -185,6 +205,9 @@ class UsersController extends MainController
 
     public function putUser(Request $request)
     {
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
         $this->setResultOk();
         if ($this->isSessionEmpty($request)) {
             $this->setResultError("Session token is missing");
@@ -196,6 +219,8 @@ class UsersController extends MainController
 
             if($validator->fails()){
                 $this->setResultError($validator->messages());
+            } elseif(empty($request->all())){
+	            $this->setResultError("Empty request");
             } else {
                 $data = $request->all();
                 if(!empty($data['email'])){
@@ -206,6 +231,7 @@ class UsersController extends MainController
                 }
                 $this->user->save();
                 unset($data['email'],$data['username'],$data['password']);
+
                 foreach($data as $key=>$value){
                     if(empty($value))
                         Profile::whereUserId($this->user->id)->whereKey($key)->first()->delete();
@@ -229,6 +255,9 @@ class UsersController extends MainController
 
     public function putUserById($id, Request $request)
     {
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
         $this->setResultOk();
         if ($this->isSessionEmpty($request)) {
             $this->setResultError("Session token is missing");
@@ -246,9 +275,11 @@ class UsersController extends MainController
                     'email' => 'max:32|email|unique:users,email,' . $user->id,
                 ]);
 
-                if ($validator->fails()) {
-                    $this->setResultError($validator->messages());
-                } else {
+	            if($validator->fails()){
+		            $this->setResultError($validator->messages());
+	            } elseif(empty($request->all())){
+		            $this->setResultError("Empty request");
+	            } else {
                     $data = $request->all();
                     if (!empty($data['email'])) {
                         $user->email = $data['email'];
@@ -283,6 +314,9 @@ class UsersController extends MainController
 
     public function putGroup($id, $group, Request $request)
     {
+	    if(!$this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
         $this->setResultOk();
         if ($this->isSessionEmpty($request)) {
             $this->setResultError("Session token is missing");

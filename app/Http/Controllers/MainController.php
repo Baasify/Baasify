@@ -21,30 +21,58 @@ class MainController extends BaseController
     protected $user;
     protected $content = array();
 
-    public function __construct(){
-        $app_key = getenv('APP_KEY');
-        if(empty($app_key)){
-            die(json_encode(array('error'=>'set app key first')));
-        }
-        if(empty($_SERVER['HTTP_X_APP_KEY'])){
-            die(json_encode(array('error'=>'You must use your app key')));
-        }
-        if($app_key != $_SERVER['HTTP_X_APP_KEY']){
-            die(json_encode(array('error'=>'Mismatched App Key')));
-        }
-    }
+	/**
+	 * Check if there is any problem with the app key
+	 *
+	 * @param Request $request
+	 * @return Response
+	 */
+	protected function appKeyAvailable($request)
+	{
+		$app_key = getenv('APP_KEY');
 
-    /**
-     * Preparing Response
-     *
-     * @return Response
-     */
-    protected function setResponse()
-    {
-        $response = new Response();
-        $response->setContent($this->content);
-        return $response;
-    }
+		if (empty($app_key)) {
+			return false;
+		}
+		if (empty($request->server()['HTTP_X_APP_KEY'])) {
+			return false;
+		}
+		if ($app_key != $request->server()['HTTP_X_APP_KEY']) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Kill the request and return the app key error
+	 *
+	 * @return Response
+	 */
+	protected function notAuthorized($request)
+	{
+		$app_key = getenv('APP_KEY');
+
+		if (empty($app_key)) {
+			$this->setResultError('Set app key first');
+		}elseif (empty($request->server()['HTTP_X_APP_KEY'])) {
+			$this->setResultError('No app key provided');
+		}elseif ($app_key != $request->server()['HTTP_X_APP_KEY']) {
+			$this->setResultError('Mismatched app key');
+		}
+		return $this->setResponse();
+	}
+
+	/**
+	 * Preparing Response
+	 *
+	 * @return Response
+	 */
+	protected function setResponse()
+	{
+		$response = new Response();
+		$response->setContent($this->content);
+		return $response;
+	}
 
     /**
      * Prepare ok response
@@ -67,8 +95,9 @@ class MainController extends BaseController
      * @return Void
      */
 
-    protected function setResultError($error)
+    protected function setResultError($error, $code = 200)
     {
+	    $this->content['http_code'] = $code;
         $this->content['result'] = "error";
         $this->content['error'] = $error;
     }
@@ -410,8 +439,8 @@ class MainController extends BaseController
         if($user !== null)
             $this->content['data']['hash'] = $this->hash;
 
-        foreach ($user->profile as $key => $value) {
-            $this->content['data']['profile'][$key] = $value;
+        foreach ($user->profile as $row) {
+            $this->content['data']['profile'][$row->key] = $row->value;
         }
     }
 

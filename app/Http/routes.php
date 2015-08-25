@@ -12,9 +12,9 @@
 */
 
 $app->get('me', ['uses' => 'UsersController@getMe']);
-$app->get('user/{id}', ['uses' => 'UsersController@getUser']);
 $app->put('user', ['uses' => 'UsersController@putUser']);
 $app->post('login', ['uses' => 'UsersController@postLogin']);
+$app->get('user/{id}', ['uses' => 'UsersController@getUser']);
 $app->post('logout', ['uses' => 'UsersController@postLogout']);
 $app->post('user', ['uses' => 'UsersController@postRegister']);
 $app->put('password', ['uses' => 'UsersController@putPassword']);
