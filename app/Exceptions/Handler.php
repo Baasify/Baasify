@@ -43,10 +43,10 @@ class Handler extends ExceptionHandler
     {
         if($e instanceof NotFoundHttpException)
         {
-            return response()->json(['error'=>'not found'],404);
+            return response()->json(['error'=>'not found','result'=>'error'],404);
         }
         elseif($e instanceof MethodNotAllowedHttpException){
-            return response()->json(['error'=>'cannot access /'.$request->path().' using '.$request->method()],405);
+            return response()->json(['error'=>'cannot access /'.$request->path().' using '.$request->method(),'result'=>'error'],405);
         }
         return parent::render($request, $e);
     }
