@@ -46,3 +46,7 @@ $app->put('file/{id}/grant/{access}/user/{user}', ['uses' => 'FilesController@pu
 $app->put('file/{id}/grant/{access}/group/{group}', ['uses' => 'FilesController@putGroupPermission']);
 $app->delete('file/{id}/revoke/{access}/user/{user}', ['uses' => 'FilesController@deleteUserPermission']);
 $app->delete('file/{id}/revoke/{access}/group/{group}', ['uses' => 'FilesController@deleteGroupPermission']);
+
+$app->post('push', ['uses' => 'PushController@postPush']);
+$app->put('push/{platform}', ['uses' => 'PushController@putDevice']);
+$app->delete('push/{udid}', ['uses' => 'PushController@deleteDevice']);
