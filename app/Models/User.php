@@ -15,6 +15,11 @@ class User extends Model {
         return $this->hasMany('App\Models\Profile');
     }
 
+    public function devices()
+    {
+        return $this->hasMany('App\Models\Device');
+    }
+
     public function documents()
     {
         return $this->hasMany('App\Models\Document');

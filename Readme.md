@@ -7,10 +7,10 @@ Baasify is an open source backend-as-a-service in its early stage. Built on [Lum
 * Content Management.
 * File Management.
 * Users Management.
+* Push Notifications.
 
 #### Planned Functions and Features
 
-* Push Notifications.
 * Database Management.
 * Analytics.
 * SDKs for both iOS and Android.
@@ -429,6 +429,56 @@ curl -X PUT http://localhost:8000/file/1 \
     -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
 ```
+
+## Push Notifications
+
+#### Enable device to receive push notifications
+
+`PUT /push/{platform}`
+
+Enable a specific device to receive the logged in user push notifications. Currently supported platforms are `ios` and `android`.
+
+```
+curl -X PUT http://localhost:8000/push/ios \
+    -d '{"token" : "123", "udid": "123456"}' \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
+    -H X-APP-KEY:1234567890
+```
+
+#### Disable device to receive push notifications
+
+`DELETE /push/{udid}`
+
+Disable receiving push notifications for a specific device.
+
+```
+curl -X DELETE http://localhost:8000/push/123456 \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
+    -H X-APP-KEY:1234567890
+```
+
+#### Send push notifications
+
+`POST /push`
+
+Send push notification to enabled devices. 
+
+Required parameters: `users` and `message`. Optional parameters: `data`.
+
+```
+curl -X POST http://localhost:8000/push \
+    -d '{"users" : [1,2,3,4], "message": "This is a message", "data":{"extra":"Hi"}}' \
+    -H Content-type:application/json \
+    -H X-SESSION-ID:1234567890 \
+    -H X-APP-KEY:1234567890
+```
+
+## Credits
+
+Baasify is built on [Lumen](http://lumen.laravel.com/) and
+use [Notificato](https://github.com/mac-cain13/notificato) to take care of Apple Push Notification Service.
 
 ## License
 
