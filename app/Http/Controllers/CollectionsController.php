@@ -16,13 +16,23 @@ class CollectionsController extends MainController
      */
     public function postCollection($name, Request $request)
     {
-        if (!$this->setSessionUser($request)) {
-            $this->setResultError("Log in first to manage collections");
-        } elseif (!$this->isAdmin()) {
+	    if(! $this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
+        if (! $this->setSessionUser($request))
+        {
+            $this->setResultError("Not logged in");
+        }
+        elseif (! $this->isAdmin())
+        {
             $this->setResultError("Unauthorized action");
-        } elseif ($this->isCollection($name)) {
+        }
+        elseif ($this->isCollection($name))
+        {
             $this->setResultError("Collection name already exists");
-        } else {
+        }
+        else
+        {
             Collection::create(["name" => $name]);
             $this->setResultOk();
         }
@@ -38,14 +48,23 @@ class CollectionsController extends MainController
      */
     public function deleteCollection($name, Request $request)
     {
-        $collection = $this->readCollection($name);
-        if (!$this->setSessionUser($request)) {
-            $this->setResultError("Log in first to manage collections");
-        } elseif (!$this->isAdmin()) {
+	    if(! $this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
+	    $collection = $this->readCollection($name);
+        if (! $this->setSessionUser($request))
+        {
+	        $this->setResultError("Not logged in");
+        }
+        elseif (! $this->isAdmin()) {
             $this->setResultError("Unauthorized action");
-        } elseif (!$collection) {
+        }
+        elseif (! $collection)
+        {
             $this->setResultError("Collection name does not exist");
-        } else {
+        }
+        else
+        {
             Collection::destroy($collection->id);
             $this->setResultOk();
         }
@@ -61,18 +80,27 @@ class CollectionsController extends MainController
      */
     public function getCollection($name, Request $request)
     {
-        $collection = $this->readCollection($name);
-        if (!$collection) {
+	    if(! $this->appKeyAvailable($request))
+		    return $this->notAuthorized($request);
+
+	    $collection = $this->readCollection($name);
+        if (! $collection)
+        {
             $this->setResultError("Collection '{$name}' doesn't exist");
-        } elseif (!$this->setSessionUser($request)) {
-            $this->setResultError("Log in first to manage collections");
-        } elseif (!$this->isModerator()) {
-            $this->setResultError("Unauthorized access");
-        } else {
+        }
+        elseif (! $this->setSessionUser($request))
+        {
+            $this->setResultError("Not logged in");
+        }
+        elseif (! $this->isModerator())
+        {
+            $this->setResultError("Unauthorized action");
+        }
+        else
+        {
             $count = Document::whereCollectionId($collection->id)->count();
             $this->setResultOk(['count' => $count, 'name'=>$collection->name]);
         }
-
         return $this->setResponse();
     }
 }

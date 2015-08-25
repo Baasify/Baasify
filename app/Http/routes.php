@@ -30,6 +30,7 @@ $app->post('document/{name}', ['uses' => 'DocumentsController@postDocument']);
 $app->get('document/{name}/{id}', ['uses' => 'DocumentsController@getDocument']);
 $app->put('document/{name}/{id}', ['uses' => 'DocumentsController@putDocument']);
 $app->delete('document/{name}/{id}', ['uses' => 'DocumentsController@deleteDocument']);
+$app->put('document/{name}/{id}/{access}', ['uses' => 'DocumentsController@putDocumentPublic']);
 
 $app->put('document/{name}/{id}/grant/{access}/user/{user}', ['uses' => 'DocumentsController@putUserPermission']);
 $app->put('document/{name}/{id}/grant/{access}/group/{group}', ['uses' => 'DocumentsController@putGroupPermission']);

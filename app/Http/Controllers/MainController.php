@@ -31,13 +31,16 @@ class MainController extends BaseController
 	{
 		$app_key = getenv('APP_KEY');
 
-		if (empty($app_key)) {
+		if (empty($app_key))
+		{
 			return false;
 		}
-		if (empty($request->server()['HTTP_X_APP_KEY'])) {
+		if (empty($request->server()['HTTP_X_APP_KEY']))
+		{
 			return false;
 		}
-		if ($app_key != $request->server()['HTTP_X_APP_KEY']) {
+		if ($app_key != $request->server()['HTTP_X_APP_KEY'])
+		{
 			return false;
 		}
 		return true;
@@ -52,12 +55,17 @@ class MainController extends BaseController
 	{
 		$app_key = getenv('APP_KEY');
 
-		if (empty($app_key)) {
-			$this->setResultError('Set app key first');
-		}elseif (empty($request->server()['HTTP_X_APP_KEY'])) {
-			$this->setResultError('No app key provided');
-		}elseif ($app_key != $request->server()['HTTP_X_APP_KEY']) {
-			$this->setResultError('Mismatched app key');
+		if (empty($app_key))
+		{
+			$this->setResultError('Set app key first',401);
+		}
+		elseif (empty($request->server()['HTTP_X_APP_KEY']))
+		{
+			$this->setResultError('No app key provided',401);
+		}
+		elseif ($app_key != $request->server()['HTTP_X_APP_KEY'])
+		{
+			$this->setResultError('Mismatched app key',401);
 		}
 		return $this->setResponse();
 	}
@@ -80,7 +88,6 @@ class MainController extends BaseController
      * @param String $data
      * @return Void
      */
-
     protected function setResultOk($data = "")
     {
         $this->content['result'] = "ok";
@@ -94,7 +101,6 @@ class MainController extends BaseController
      * @param String $error
      * @return Void
      */
-
     protected function setResultError($error, $code = 200)
     {
 	    $this->content['http_code'] = $code;
@@ -111,25 +117,27 @@ class MainController extends BaseController
      * @param String $access
      * @return Bool
      */
-
     protected function isAllowed(Request $request, $type, $type_id, $access)
     {
         $type = 'where' . ucfirst($type) . 'Id';
 
-        if (!$this->setSessionUser($request)) {
+        if (! $this->setSessionUser($request))
+        {
             // NOT LOGGED IN -- CHECK PUBLIC ACCESS
             $permission = Permission::$type($type_id)
                 ->whereGroupId(null)
                 ->whereUserId(null)
                 ->whereAccess($access)
                 ->first();
-        } else {
+        }
+        else
+        {
             $user = $this->user;
             $permission = Permission::$type($type_id)
                 ->whereUserId($user->id)
                 ->whereAccess($access)
                 ->first();
-            if(!$permission)
+            if(! $permission)
                 $permission = Permission::$type($type_id)
                     ->whereGroupId($user->group_id)
                     ->whereAccess($access)
@@ -148,12 +156,13 @@ class MainController extends BaseController
      * @param String $access
      * @return Void
      */
-
     protected function setAllowed($document_id = null, $file_id = null, $user_id = null, $group_id = null, $access = null)
     {
-        if ($access == 'all') {
+        if ($access == 'all')
+        {
             $access = ['read', 'update', 'delete'];
-            foreach ($access as $row) {
+            foreach ($access as $row)
+            {
                 $permission = new Permission();
                 $permission->document_id = $document_id;
                 $permission->file_id = $file_id;
@@ -162,8 +171,9 @@ class MainController extends BaseController
                 $permission->access = $row;
                 $permission->save();
             }
-
-        } else {
+        }
+        else
+        {
             $permission = new Permission();
             $permission->document_id = $document_id;
             $permission->file_id = $file_id;
@@ -184,26 +194,32 @@ class MainController extends BaseController
      * @param String $access
      * @return Void
      */
-
     protected function setUnAllowed($document_id = null, $file_id = null, $user_id = null, $group_id = null, $access = null)
     {
-        if ($access == 'all') {
+        if ($access == 'all')
+        {
             $access = ['read', 'update', 'delete'];
-            foreach ($access as $row) {
-                Permission::whereDocumentId($document_id)
+            foreach ($access as $row)
+            {
+                $permission = Permission::whereDocumentId($document_id)
                     ->whereFileId($file_id)
                     ->whereGroupId($group_id)
                     ->whereUserId($user_id)
                     ->whereAccess($row)
-                    ->first()->delete();
+                    ->first();
+	            if($permission)
+		            $permission->delete();
             }
-        } else {
-            Permission::whereDocumentId($document_id)
+        }
+        else
+        {
+	        $permission = Permission::whereDocumentId($document_id)
                 ->whereFileId($file_id)
                 ->whereGroupId($group_id)
                 ->whereUserId($user_id)
                 ->whereAccess($access)
-                ->first()->delete();
+                ->first();
+	        if($permission)$permission->delete();
         }
     }
 
@@ -213,7 +229,6 @@ class MainController extends BaseController
      * @param Int $id
      * @return Bool
      */
-
     protected function isDocument($id)
     {
         return Document::whereId($id)->first() !== NULL;
@@ -225,11 +240,11 @@ class MainController extends BaseController
      * @param File $file
      * @return Void
      */
-
     protected function setFileData(File $file)
     {
         $this->content['data'] = $this->prepareFileData($file);
-        if ($file->document) {
+        if ($file->document)
+        {
             $this->content['data']['document'] = $this->prepareDocumentData($file->document);
         }
     }
@@ -240,7 +255,6 @@ class MainController extends BaseController
      * @param File $file
      * @return Array
      */
-
     protected function prepareFileData(File $file)
     {
         $data = [
@@ -260,7 +274,6 @@ class MainController extends BaseController
      * @param String $name
      * @return Bool
      */
-
     protected function isCollection($name)
     {
         return Collection::whereName($name)->first() !== NULL;
@@ -288,7 +301,8 @@ class MainController extends BaseController
     protected function setDocumentData(Document $document)
     {
         $this->content['data'] = $this->prepareDocumentData($document);
-        foreach ($document->files as $file) {
+        foreach ($document->files as $file)
+        {
             $this->content['data']['files'][] = $this->prepareFileData($file);
         }
     }
@@ -302,9 +316,11 @@ class MainController extends BaseController
 
     protected function setDocumentListData(Array $documents)
     {
-        foreach($documents as $document) {
+        foreach($documents as $document)
+        {
             $data = $this->prepareDocumentData($document);
-            foreach ($document->files as $file) {
+            foreach ($document->files as $file)
+            {
                 $data['files'][] = $this->prepareFileData($file);
             }
             $this->content['data'][] = $data;
@@ -328,7 +344,8 @@ class MainController extends BaseController
             '_author' => $document->user->username,
         ];
         $document->data = json_decode($document->data);
-        foreach ($document->data as $key => $value) {
+        foreach ($document->data as $key => $value)
+        {
             $data[$key] = $value;
         }
         return $data;
@@ -342,7 +359,7 @@ class MainController extends BaseController
 
     protected function isAdmin()
     {
-        if(!$this->user) return false;
+        if(! $this->user) return false;
         return $this->user->group->id == 1;
     }
 
@@ -354,7 +371,7 @@ class MainController extends BaseController
 
     protected function isModerator()
     {
-        if(!$this->user) return false;
+        if(! $this->user) return false;
         return  $this->user->group->id < 3;
     }
 
@@ -398,9 +415,8 @@ class MainController extends BaseController
     {
         $hash = $request->header('X-SESSION-ID');
         $session = Session::whereHash($hash)->first();
-
-        if (!$session) return false;
-
+        if (! $session)
+	        return false;
         return Session::destroy($session->id) > 0;
     }
 
@@ -415,7 +431,8 @@ class MainController extends BaseController
     {
         $hash = $request->header('X-SESSION-ID');
         $session = Session::whereHash($hash)->first();
-        if (!$session) return false;
+        if (! $session)
+	        return false;
         $this->hash = $hash;
         $this->user = $session->user;
         return true;
@@ -439,7 +456,8 @@ class MainController extends BaseController
         if($user !== null)
             $this->content['data']['hash'] = $this->hash;
 
-        foreach ($user->profile as $row) {
+        foreach ($user->profile as $row)
+        {
             $this->content['data']['profile'][$row->key] = $row->value;
         }
     }
