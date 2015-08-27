@@ -42,6 +42,7 @@ $app->get('file/{id}', ['uses' => 'FilesController@getFile']);
 $app->delete('file/{id}', ['uses' => 'FilesController@deleteFile']);
 $app->get('file/{id}/details', ['uses' => 'FilesController@getDetails']);
 $app->post('file/{document}', ['uses' => 'FilesController@postFileToDocument']);
+$app->put('file/{id}/{access}', ['uses' => 'FilesController@putFilePublic']);
 
 $app->put('file/{id}/grant/{access}/user/{user}', ['uses' => 'FilesController@putUserPermission']);
 $app->put('file/{id}/grant/{access}/group/{group}', ['uses' => 'FilesController@putGroupPermission']);
