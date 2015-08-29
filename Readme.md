@@ -304,13 +304,14 @@ curl -X DELETE http://localhost:8000/document/myposts/1/revoke/read/user/1 \
 
 #### Make Document Public or Private
 
-`PUT /document/{collection-name}/{document-id}`
+`PUT /document/{collection-name}/{document-id}/public`
 
-Documents are private by default. To change them set `public` parameter to `true` or `false` :
+`PUT /document/{collection-name}/{document-id}/private`
+
+Documents are private by default. Document owner and moderators can change that:
 
 ```
-curl -X PUT http://localhost:8000/document/myposts/1 \
-    -d '{"public" : true}' \
+curl -X PUT http://localhost:8000/document/myposts/1/public \
     -H Content-type:application/json \
     -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890
@@ -418,13 +419,14 @@ curl -X DELETE http://localhost:8000/file/1/revoke/delete/user/1 \
 
 #### Make File Public or Private
 
-`PUT /file/{file-id}`
+`PUT /file/{file-id}/public`
 
-Files are private by default. To change them set `public` parameter to `true` or `false` :
+`PUT /file/{file-id}/private`
+
+Files are private by default. File owner and moderators can change that:
 
 ```
-curl -X PUT http://localhost:8000/file/1 \
-    -d '{"public" : true}' \
+curl -X PUT http://localhost:8000/file/1/public \
     -H Content-type:application/json \
     -H X-SESSION-ID:1234567890 \
     -H X-APP-KEY:1234567890

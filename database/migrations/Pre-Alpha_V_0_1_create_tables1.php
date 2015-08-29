@@ -40,6 +40,7 @@ class CreateTables1 extends Migration {
         Schema::create('profiles', function(Blueprint $table)
         {
             $table->engine = 'InnoDB';
+	        $table->increments('id');
             $table->integer('user_id')->unsigned()->default(0);
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('key');
@@ -133,17 +134,17 @@ class CreateTables1 extends Migration {
 	 */
 	public function down()
 	{
+		Schema::drop('password_resets');
+		Schema::drop('sessions');
+		Schema::drop('data');
+		Schema::drop('permissions');
+		Schema::drop('devices');
+		Schema::drop('profiles');
+		Schema::drop('files');
+		Schema::drop('documents');
+		Schema::drop('collections');
         Schema::drop('users');
-        Schema::drop('password_resets');
-        Schema::drop('profiles');
-        Schema::drop('sessions');
-        Schema::drop('collections');
-        Schema::drop('documents');
-        Schema::drop('data');
-        Schema::drop('files');
         Schema::drop('groups');
-        Schema::drop('permissions');
-        Schema::drop('devices');
 	}
 
 }

@@ -12,9 +12,9 @@
 */
 
 $app->get('me', ['uses' => 'UsersController@getMe']);
-$app->get('user/{id}', ['uses' => 'UsersController@getUser']);
 $app->put('user', ['uses' => 'UsersController@putUser']);
 $app->post('login', ['uses' => 'UsersController@postLogin']);
+$app->get('user/{id}', ['uses' => 'UsersController@getUser']);
 $app->post('logout', ['uses' => 'UsersController@postLogout']);
 $app->post('user', ['uses' => 'UsersController@postRegister']);
 $app->put('password', ['uses' => 'UsersController@putPassword']);
@@ -30,6 +30,7 @@ $app->post('document/{name}', ['uses' => 'DocumentsController@postDocument']);
 $app->get('document/{name}/{id}', ['uses' => 'DocumentsController@getDocument']);
 $app->put('document/{name}/{id}', ['uses' => 'DocumentsController@putDocument']);
 $app->delete('document/{name}/{id}', ['uses' => 'DocumentsController@deleteDocument']);
+$app->put('document/{name}/{id}/{access}', ['uses' => 'DocumentsController@putDocumentPublic']);
 
 $app->put('document/{name}/{id}/grant/{access}/user/{user}', ['uses' => 'DocumentsController@putUserPermission']);
 $app->put('document/{name}/{id}/grant/{access}/group/{group}', ['uses' => 'DocumentsController@putGroupPermission']);
@@ -41,6 +42,7 @@ $app->get('file/{id}', ['uses' => 'FilesController@getFile']);
 $app->delete('file/{id}', ['uses' => 'FilesController@deleteFile']);
 $app->get('file/{id}/details', ['uses' => 'FilesController@getDetails']);
 $app->post('file/{document}', ['uses' => 'FilesController@postFileToDocument']);
+$app->put('file/{id}/{access}', ['uses' => 'FilesController@putFilePublic']);
 
 $app->put('file/{id}/grant/{access}/user/{user}', ['uses' => 'FilesController@putUserPermission']);
 $app->put('file/{id}/grant/{access}/group/{group}', ['uses' => 'FilesController@putGroupPermission']);
