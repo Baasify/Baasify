@@ -1,4 +1,4 @@
-## Baasify
+## Baasify [![Build Status](https://travis-ci.org/Baasify/Baasify.svg?branch=enhancements)](https://travis-ci.org/Baasify/Baasify)
 
 Baasify is an open source backend-as-a-service in its early stage. Built on [Lumen](http://lumen.laravel.com/).
  
