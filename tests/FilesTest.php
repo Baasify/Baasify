@@ -20,7 +20,7 @@ class FilesTest extends TestCase
 		$this->post('/file', [], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"file"=>["The file field is required."],
+				"error"=>["The file field is required."],
 			));
 
 		file_put_contents("UnitTestTempFile.txt", 'THIS IS JUST FOR TESTING');
@@ -36,10 +36,10 @@ class FilesTest extends TestCase
 		$this->call('POST', '/file', [], [], ['file'=>$uploadedFile], ['HTTP_X_APP_KEY'=>getenv('APP_KEY')]);
 		$this->seeJson(array(
 			"result"=>"error",
-			"error"=>"Not logged in",
+			"error"=>["Not logged in"],
 		));
 
-		$this->post('/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -59,7 +59,7 @@ class FilesTest extends TestCase
 			['HTTP_X_APP_KEY'=>getenv('APP_KEY'), 'HTTP_X_SESSION_ID'=>$admin_hash]);
 		$this->seeJson(array(
 			"result"=>"error",
-			"error"=>"File is not valid",
+			"error"=>["File is not valid"],
 		));
 
 
@@ -85,7 +85,7 @@ class FilesTest extends TestCase
 
 		$this->seeJson(array(
 			"result"=>"error",
-			"error"=>"Document not found",
+			"error"=>["Document not found"],
 		));
 
 		$this->call('POST', '/file/1', [], [], ['file'=>$uploadedFile],
@@ -118,14 +118,14 @@ class FilesTest extends TestCase
 
 		$this->seeJson(array(
 			"result"=>"error",
-			"error"=>"Unauthorized action",
+			"error"=>["Unauthorized action"],
 		));
 
 	}
 
 	public function testRetrieve()
 	{
-		$this->post('/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -150,7 +150,7 @@ class FilesTest extends TestCase
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
@@ -175,16 +175,16 @@ class FilesTest extends TestCase
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->get('/file/1/details', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
-		$this->put('/file/1/grant/read/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->put('/file/1/read/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -198,7 +198,7 @@ class FilesTest extends TestCase
 				"name"=>"UnitTestTempFile.txt",
 			));
 
-		$this->delete('/file/1/revoke/read/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->delete('/file/1/read/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -206,16 +206,16 @@ class FilesTest extends TestCase
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->get('/file/1/details', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
-		$this->put('/file/1/grant/read/group/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->put('/file/1/read/group/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -229,7 +229,7 @@ class FilesTest extends TestCase
 				"name"=>"UnitTestTempFile.txt",
 			));
 
-		$this->delete('/file/1/revoke/read/group/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->delete('/file/1/read/group/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -237,19 +237,19 @@ class FilesTest extends TestCase
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->get('/file/1/details', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 	}
 
 	public function testUpdating()
 	{
-		$this->post('/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -281,7 +281,7 @@ class FilesTest extends TestCase
 
 		$user_hash = json_decode($this->response->getContent())->data->hash;
 
-		$this->put('/file/1/grant/update/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->put('/file/1/update/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -299,16 +299,16 @@ class FilesTest extends TestCase
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user2_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->get('/file/1/details', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user2_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
-		$this->put('/file/1/grant/read/user/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
+		$this->put('/file/1/read/user/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -322,7 +322,7 @@ class FilesTest extends TestCase
 				"name"=>"UnitTestTempFile.txt",
 			));
 
-		$this->delete('/file/1/revoke/read/user/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
+		$this->delete('/file/1/read/user/3', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -330,13 +330,13 @@ class FilesTest extends TestCase
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user2_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->get('/file/1/details', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user2_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->put('/file/1/public', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
@@ -361,18 +361,18 @@ class FilesTest extends TestCase
 		$this->get('/file/1', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user2_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->get('/file/1/details', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user2_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 	}
 
 	public function testDeleting(){
-		$this->post('/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login', ['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -426,10 +426,10 @@ class FilesTest extends TestCase
 		$this->delete('/file/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
-		$this->put('/file/2/grant/delete/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->put('/file/2/delete/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
@@ -455,14 +455,14 @@ class FilesTest extends TestCase
 
 		$this->notSeeInDatabase('permissions', ['access'=>'delete', 'file_id'=>'3', 'user_id'=>'2']);
 
-		$this->put('/file/3/grant/delete/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->put('/file/3/delete/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
 
 		$this->seeInDatabase('permissions', ['access'=>'delete', 'file_id'=>'3', 'user_id'=>'2']);
 
-		$this->delete('/file/3/revoke/delete/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->delete('/file/3/delete/user/2', [], ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));

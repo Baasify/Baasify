@@ -24,11 +24,11 @@ class DocumentsController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Not logged in");
+            $this->setResultError("Not logged in", 401);
         }
         elseif (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         else
         {
@@ -68,13 +68,13 @@ class DocumentsController extends MainController
         $document = Document::whereId($id)->first();
         if (! $document)
         {
-            $this->setResultError("Document is not found");
+            $this->setResultError("Document is not found", 404);
         }
         elseif (! $this->isCollection($name)) {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         elseif (! $document->public && ! $this->isModerator() && ! $this->isAllowed($request, 'document', $id, 'read')) {
-            $this->setResultError("Unauthorized action");
+            $this->setResultError("Unauthorized action", 403);
         }
         else
         {
@@ -99,7 +99,7 @@ class DocumentsController extends MainController
 	    $this->setSessionUser($request);
         if (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         else
         {
@@ -157,11 +157,11 @@ class DocumentsController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Not logged in");
+            $this->setResultError("Not logged in", 401);
         }
         elseif (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         else
         {
@@ -169,11 +169,11 @@ class DocumentsController extends MainController
 
             if (! $document)
             {
-                $this->setResultError("Document is not found");
+                $this->setResultError("Document is not found", 404);
             }
             elseif (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {
@@ -209,15 +209,15 @@ class DocumentsController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Not logged in");
+            $this->setResultError("Not logged in", 401);
         }
         elseif (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         elseif( $access != 'public' && $access != 'private' )
         {
-	        $this->setResultError("not found", 404);
+	        $this->setResultError("Invalid access type", 400);
         }
         else
         {
@@ -225,11 +225,11 @@ class DocumentsController extends MainController
             $public = $access=='public'?1:0;
             if (! $document)
             {
-                $this->setResultError("Document is not found");
+                $this->setResultError("Document is not found", 404);
             }
             elseif (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {
@@ -256,20 +256,20 @@ class DocumentsController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Not logged in");
+            $this->setResultError("Not logged in", 401);
         }
         elseif (! $this->isCollection($name)) {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
 		else {
             $document = Document::find($id);
             if (! $document)
             {
-                $this->setResultError("Document is not found");
+                $this->setResultError("Document is not found", 404);
             }
             elseif (! $this->isAllowed($request, 'document', $id, 'delete') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {
@@ -297,21 +297,26 @@ class DocumentsController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Not logged in");
+            $this->setResultError("Not logged in", 401);
         }
         elseif (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {
-            if (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
+	        $document = Document::find($id);
+	        if (! $document)
+	        {
+		        $this->setResultError("Document is not found", 404);
+	        }
+            elseif (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {
@@ -339,21 +344,26 @@ class DocumentsController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Not logged in");
+            $this->setResultError("Not logged in", 401);
         }
         elseif (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {
-            if (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
+	        $document = Document::find($id);
+	        if (! $document)
+	        {
+		        $this->setResultError("Document is not found", 404);
+	        }
+	        elseif (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {
@@ -379,19 +389,28 @@ class DocumentsController extends MainController
 	    if(! $this->appKeyAvailable($request))
 		    return $this->notAuthorized($request);
 
-	    if (! $this->isCollection($name))
+	    if (! $this->setSessionUser($request))
+	    {
+		    $this->setResultError("Not logged in", 401);
+	    }
+	    elseif (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 404);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {
-            if (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
+	        $document = Document::find($id);
+	        if (! $document)
+	        {
+		        $this->setResultError("Document is not found", 404);
+	        }
+	        elseif (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {
@@ -419,21 +438,26 @@ class DocumentsController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Not logged in");
+            $this->setResultError("Not logged in", 401);
         }
         elseif (! $this->isCollection($name))
         {
-            $this->setResultError("Collection '{$name}' doesn't exist");
+            $this->setResultError("Collection '{$name}' doesn't exist", 401);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {
-            if (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
+	        $document = Document::find($id);
+	        if (! $document)
+	        {
+		        $this->setResultError("Document is not found", 404);
+	        }
+	        elseif (! $this->isAllowed($request, 'document', $id, 'update') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {

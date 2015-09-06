@@ -13,11 +13,15 @@ class iOSPushNotifications {
 
     private $gateway;
 
-    private $results = array();
-    const UNKNOWN = -1;
-    const INVALID = 0;
-    const VALID = 1;
+	const UNKNOWN = -1;
+	const INVALID = 0;
+	const VALID = 1;
 
+	private $results = [
+		-1 => [],
+		0 => [],
+		1 => [],
+	];
     function add($status, $token, $update = null){
         if($update)
             $this->results[$status] = array($token=>$update);
