@@ -9,12 +9,17 @@ class AndroidPushNotifications {
     public $data = array();
     public $message;
 
+	const UNKNOWN = -1;
+	const INVALID = 0;
+	const VALID = 1;
+	const UPDATED = 2;
 
-    private $results = array();
-    const UNKNOWN = -1;
-    const INVALID = 0;
-    const VALID = 1;
-    const UPDATED = 2;
+    private $results = [
+	    -1 => [],
+	    0 => [],
+	    1 => [],
+	    2 => [],
+    ];
 
     function add($status, $token, $update = null){
         if($update)
@@ -36,8 +41,10 @@ class AndroidPushNotifications {
     }
 
     function push(){
+
         $chunks = array_chunk($this->devices, 1000);
 
+	    $this->data['message'] = $this->message;
         foreach($chunks as $chunk) {
             $this->process($chunk);
         }
@@ -82,7 +89,7 @@ class AndroidPushNotifications {
     private function connect($fields){
         $headers = array
         (
-            'Authorization: key=' . getenv('ANDROID_API_ACCESS_KEY'),
+            'Authorization: key=' . getenv('ANDROID_PUSH_API_KEY'),
             'Content-Type: application/json'
         );
 

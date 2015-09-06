@@ -17,38 +17,37 @@ class UsersTest extends TestCase
 	public function testLogin()
 	{
 
-		$this->post('/login', ['email' => 'baasify', 'password'=>'baasify'])
+		$this->post('/user/login', ['email' => 'baasify', 'password'=>'baasify'])
 			->seeJson(array(
 				"result"=>"error",
-				'error' => 'No app key provided',
+				"error"=>["No app key provided"],
 			));
 
-		$this->post('/login',['email' => 'baasify', 'password'=>'baasify'], ['X-APP-KEY'=>'WrongAppKey'])
+		$this->post('/user/login',['email' => 'baasify', 'password'=>'baasify'], ['X-APP-KEY'=>'WrongAppKey'])
 			->seeJson(array(
 				"result"=>"error",
-				"error" => "Mismatched app key",
+				"error"=>["Mismatched app key"],
 			));
 
-		$this->post('/login',['email' => 'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"email"=>["The email must be a valid email address."],
-				"password"=>["The password field is required."]
+				"error"=>["The email must be a valid email address.","The password field is required."]
 			));
 
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'123'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'123'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"password"=>["The password must be at least 6 characters."]
+				"error"=>["The password must be at least 6 characters."]
 			));
 
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'123456'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'123456'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error" => "wrong email or password",
+				"error"=>["wrong email or password"],
 			));
 
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -65,26 +64,20 @@ class UsersTest extends TestCase
 		$this->post('/user',[], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"email"=>["The email field is required."],
-				"username"=>["The username field is required."],
-				"password"=>["The password field is required."],
+				"error"=>["The email field is required.","The username field is required.","The password field is required."]
 			));
 
 		$this->post('/user',['email' => 'user'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"email"=>["The email must be a valid email address."],
-				"username"=>["The username field is required."],
-				"password"=>["The password field is required."],
+				"error"=>["The email must be a valid email address.","The username field is required.","The password field is required."]
 			));
 
 		$this->post('/user',['email' => 'user@baasify.org', 'username'=>'baasify', 'password'=>'123'],
 			['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"email"=>["The email has already been taken."],
-				"username"=>["The username has already been taken."],
-				"password"=>["The password must be at least 6 characters."],
+				"error"=>["The email has already been taken.","The username has already been taken.","The password must be at least 6 characters."],
 			));
 
 		$this->post('/user',['email' => 'test@baasify.org', 'username'=>'test', 'password'=>'123456'],
@@ -102,7 +95,7 @@ class UsersTest extends TestCase
 
 	public function testRetrieve(){
 
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -121,26 +114,27 @@ class UsersTest extends TestCase
 
 		$user_hash = json_decode($this->response->getContent())->data->hash;
 
-		$this->get('/me', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
+		$this->get('/user', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
 				"username" => "Baasify",
 			));
 
-		$this->get('/me', ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->get('/user', ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error" => "Session token is missing",
+				"error"=>["Session token is missing"],
 			));
 
-		$this->get('/me', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>'WRONG SESSION TOKEN'])
+		$this->get('/user', ['X-APP-KEY'=>getenv('APP_KEY'), 'X-SESSION-ID'=>'WRONG SESSION TOKEN'])
 			->seeJson(array(
 				"result"=>"error",
-				"error" => "Mismatched session token",
+				"error"=>["Mismatched session token"],
 			));
 
-		$this->post('/user',['email' => 'test2@baasify.org', 'username'=>'test2', 'password'=>'123456', 'custom_data'=>'data'],
+		$this->post('/user',['email' => 'test2@baasify.org', 'username'=>'test2', 'password'=>'123456',
+			'profile'=>['custom_data'=>'data']],
 			['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
@@ -152,13 +146,13 @@ class UsersTest extends TestCase
 		$this->get('/user/3', ['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action"
+				"error"=>["Unauthorized action"]
 			));
 
 		$this->get('/user/4', ['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action"
+				"error"=>["Unauthorized action"]
 			));
 
 		$this->get('/user/3', ['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$admin_hash])
@@ -171,13 +165,13 @@ class UsersTest extends TestCase
 		$this->get('/user/4', ['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"User not found",
+				"error"=>["User not found"],
 			));
 	}
 
 	public function testLogout()
 	{
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -188,30 +182,30 @@ class UsersTest extends TestCase
 
 		$this->assertTrue(!empty($hash));
 
-		$this->post('/logout',[],
+		$this->post('/user/logout',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
 
-		$this->post('/logout',[],
+		$this->post('/user/logout',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Mismatched session token",
+				"error"=>["Mismatched session token"],
 			));
 
-		$this->post('/logout',[],
+		$this->post('/user/logout',[],
 			['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Session token is missing"
+				"error"=>["Session token is missing"]
 			));
 	}
 
 	public function testChangePassword()
 	{
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -222,37 +216,35 @@ class UsersTest extends TestCase
 
 		$this->assertTrue(!empty($hash));
 
-		$this->put('/password',[],
+		$this->put('/user/password',[],
 			['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Session token is missing"
+				"error"=>["Session token is missing"]
 			));
 
-		$this->put('/password',[],
+		$this->put('/user/password',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>"WrongSessionID"])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Mismatched session token",
+				"error"=>["Mismatched session token"],
 			));
 
-		$this->put('/password',[],
+		$this->put('/user/password',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"error",
-				"old_password"=>["The old password field is required."],
-				"new_password"=>["The new password field is required."],
+				"error"=>["The old password field is required.","The new password field is required."],
 			));
 
-		$this->put('/password',["old_password"=>'123',"new_password"=>"123"],
+		$this->put('/user/password',["old_password"=>'123',"new_password"=>"123"],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"error",
-				"old_password"=>["The old password must be at least 6 characters."],
-				"new_password"=>["The new password must be at least 6 characters."],
+				"error"=>["The old password must be at least 6 characters.","The new password must be at least 6 characters."],
 			));
 
-		$this->put('/password',["old_password"=>'baasify',"new_password"=>"123456"],
+		$this->put('/user/password',["old_password"=>'baasify',"new_password"=>"123456"],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"ok",
@@ -262,7 +254,7 @@ class UsersTest extends TestCase
 
 	public function testUpdateUser()
 	{
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -285,32 +277,31 @@ class UsersTest extends TestCase
 			['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Session token is missing"
+				"error"=>["Session token is missing"]
 			));
 
 		$this->put('/user',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>"WrongSessionID"])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Mismatched session token",
+				"error"=>["Mismatched session token"],
 			));
 
 		$this->put('/user',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Empty request",
+				"error"=>["Empty request"],
 			));
 
 		$this->put('/user',["username"=>"test","email"=>"test@baasify.org"],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"error",
-				"username"=>["The username has already been taken."],
-				"email"=>["The email has already been taken."],
+				"error"=>["The username has already been taken.","The email has already been taken."],
 			));
 
-		$this->put('/user',["username"=>'admin',"extra_data"=>"123"],
+		$this->put('/user',["username"=>'admin',"profile"=>["extra_data"=>"123"]],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"ok",
@@ -318,7 +309,7 @@ class UsersTest extends TestCase
 
 		$this->seeInDatabase("profiles",["user_id"=>1,"key"=>"extra_data","value"=>"123"]);
 
-		$this->put('/user',["extra_data"=>"1234"],
+		$this->put('/user',["profile"=>["extra_data"=>"1234"]],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$hash])
 			->seeJson(array(
 				"result"=>"ok",
@@ -329,7 +320,7 @@ class UsersTest extends TestCase
 	}
 	public function testUpdateUserById()
 	{
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -368,32 +359,31 @@ class UsersTest extends TestCase
 			['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Session token is missing"
+				"error"=>["Session token is missing"]
 			));
 
 		$this->put('/user/3',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>"WrongSessionID"])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Mismatched session token",
+				"error"=>["Mismatched session token"],
 			));
 
 		$this->put('/user/3',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Empty request",
+				"error"=>["Empty request"],
 			));
 
 		$this->put('/user/3',["username"=>"test","email"=>"test@baasify.org"],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"email"=>["The email has already been taken."],
-				"username"=>["The username has already been taken."],
+				"error"=>["The email has already been taken.","The username has already been taken."],
 			));
 
-		$this->put('/user/3',["username"=>'test3',"extra_data"=>"123"],
+		$this->put('/user/3',["username"=>'test3',"profile"=>["extra_data"=>"123"]],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
@@ -401,7 +391,7 @@ class UsersTest extends TestCase
 
 		$this->seeInDatabase("profiles",["user_id"=>3,"key"=>"extra_data","value"=>"123"]);
 
-		$this->put('/user/3',["extra_data"=>"1234"],
+		$this->put('/user/3',["profile"=>["extra_data"=>"1234"]],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
@@ -414,34 +404,34 @@ class UsersTest extends TestCase
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
 		$this->put('/user/3',["username"=>"test","email"=>"test@baasify.org"],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
-		$this->put('/user/3',["username"=>'test3',"extra_data"=>"123"],
+		$this->put('/user/3',["username"=>'test3',"profile"=>["extra_data"=>"123"]],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
-		$this->put('/user/3',["extra_data"=>"1234"],
+		$this->put('/user/3',["profile"=>["extra_data"=>"1234"]],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 	}
 
 	public function testUpdateUserGroup()
 	{
-		$this->post('/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
+		$this->post('/user/login',['email' => 'user@baasify.org', 'password'=>'baasify'], ['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"ok",
 				"email" => "user@baasify.org",
@@ -476,34 +466,34 @@ class UsersTest extends TestCase
 
 		$this->assertTrue(!empty($user2_hash));
 
-		$this->put('/group/3/1',[],
+		$this->put('/user/group/3/1',[],
 			['X-APP-KEY'=>getenv('APP_KEY')])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Session token is missing"
+				"error"=>["Session token is missing"]
 			));
 
-		$this->put('/group/3/1',[],
+		$this->put('/user/group/3/1',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>"WrongSessionID"])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Mismatched session token",
+				"error"=>["Mismatched session token"],
 			));
 
-		$this->put('/group/3/1',[],
+		$this->put('/user/group/3/1',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 
-		$this->put('/group/2/1',[],
+		$this->put('/user/group/2/1',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$admin_hash])
 			->seeJson(array(
 				"result"=>"ok",
 			));
 
-		$this->put('/group/3/2',[],
+		$this->put('/user/group/3/2',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user_hash])
 			->seeJson(array(
 				"result"=>"ok",
@@ -512,11 +502,11 @@ class UsersTest extends TestCase
 		$this->seeInDatabase('users',['id'=>2, 'group_id'=>1]);
 		$this->seeInDatabase('users',['id'=>3, 'group_id'=>2]);
 
-		$this->put('/group/3/1',[],
+		$this->put('/user/group/3/1',[],
 			['X-APP-KEY'=>getenv('APP_KEY'),'X-SESSION-ID'=>$user2_hash])
 			->seeJson(array(
 				"result"=>"error",
-				"error"=>"Unauthorized action",
+				"error"=>["Unauthorized action"],
 			));
 	}
 

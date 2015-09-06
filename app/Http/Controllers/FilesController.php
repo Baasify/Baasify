@@ -44,19 +44,19 @@ class FilesController extends MainController
 
         if (! empty($document) && ! $this->isDocument($document))
         {
-            $this->setResultError("Document not found");
+            $this->setResultError("Document not found", 404);
         }
         elseif ($validator->fails())
         {
-            $this->setResultError($validator->messages());
+            $this->setResultError($validator->messages(), 400);
         }
         elseif (! $this->setSessionUser($request))
         {
-	        $this->setResultError("Not logged in");
+	        $this->setResultError("Not logged in", 401);
         }
         elseif ($document !== null && Document::find($document)->user_id != $this->user->id && ! $this->isModerator())
         {
-	        $this->setResultError("Unauthorized action");
+	        $this->setResultError("Unauthorized action", 403);
         }
         else
         {
@@ -83,7 +83,7 @@ class FilesController extends MainController
             }
             else
             {
-                $this->setResultError('File is not valid');
+                $this->setResultError('File is not valid', 400);
             }
         }
         return $this->setResponse();
@@ -104,11 +104,11 @@ class FilesController extends MainController
 	    $file = File::find($id);
         if (! $file)
         {
-            $this->setResultError("File is not found");
+            $this->setResultError("File is not found", 404);
         }
         elseif (! $file->public && !$this->isModerator() && ! $this->isAllowed($request, 'file', $id, 'read'))
         {
-            $this->setResultError("Unauthorized action");
+            $this->setResultError("Unauthorized action", 403);
         }
         else
         {
@@ -143,11 +143,11 @@ class FilesController extends MainController
 	    $file = File::find($id);
         if (! $file)
         {
-            $this->setResultError("File is not found");
+            $this->setResultError("File is not found", 404);
         }
         elseif (! $file->public && ! $this->isAllowed($request, 'file', $id, 'read') && ! $this->isModerator())
         {
-            $this->setResultError("Unauthorized action");
+            $this->setResultError("Unauthorized action", 403);
         }
         else
         {
@@ -172,11 +172,11 @@ class FilesController extends MainController
 
 	    if (! $this->setSessionUser($request))
 	    {
-		    $this->setResultError("Not logged in");
+		    $this->setResultError("Not logged in", 401);
 	    }
 	    elseif( $access != 'public' && $access != 'private' )
 	    {
-		    $this->setResultError("not found", 404);
+		    $this->setResultError("Invalid access type", 400);
 	    }
 	    else
 	    {
@@ -184,11 +184,11 @@ class FilesController extends MainController
 		    $public = $access=='public'?1:0;
 		    if (! $file)
 		    {
-			    $this->setResultError("File is not found");
+			    $this->setResultError("File is not found", 404);
 		    }
 		    elseif (! $this->isAllowed($request, 'file', $id, 'update') && ! $this->isModerator())
 		    {
-			    $this->setResultError("Unauthorized action");
+			    $this->setResultError("Unauthorized action", 403);
 		    }
 		    else
 		    {
@@ -214,18 +214,18 @@ class FilesController extends MainController
 
 	    if (! $this->setSessionUser($request))
         {
-            $this->setResultError("Log in first to delete files");
+            $this->setResultError("Not logged in", 401);
         }
         else
         {
             $file = File::find($id);
             if (! $file)
             {
-                $this->setResultError("File is not found");
+                $this->setResultError("File is not found", 404);
             }
             elseif (! $this->isAllowed($request, 'file', $id, 'delete') && ! $this->isModerator())
             {
-                $this->setResultError("Unauthorized action");
+                $this->setResultError("Unauthorized action", 403);
             }
             else
             {
@@ -251,17 +251,21 @@ class FilesController extends MainController
 		    return $this->notAuthorized($request);
 
 	    $file = File::find($id);
-        if (! $file)
+	    if (! $this->setSessionUser($request))
+	    {
+		    $this->setResultError("Not logged in", 401);
+	    }
+	    elseif (! $file)
         {
-            $this->setResultError("File is not found");
+            $this->setResultError("File is not found", 404);
         }
         elseif (! $this->isAllowed($request, 'file', $id, 'update') && ! $this->isModerator())
         {
-            $this->setResultError("Unauthorized action");
+            $this->setResultError("Unauthorized action", 403);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {
@@ -286,21 +290,21 @@ class FilesController extends MainController
 		    return $this->notAuthorized($request);
 
 	    $file = File::find($id);
-        if (! $file)
+	    if (! $this->setSessionUser($request))
+	    {
+		    $this->setResultError("Not logged in", 401);
+	    }
+	    elseif (! $file)
         {
-            $this->setResultError("File is not found");
-        }
-        elseif (! $group)
-        {
-            $this->setResultError("Group name is not found");
+            $this->setResultError("File is not found", 404);
         }
         elseif (! $this->isAllowed($request, 'file', $id, 'update') && ! $this->isModerator())
         {
-            $this->setResultError("Unauthorized action");
+            $this->setResultError("Unauthorized action", 403);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {
@@ -325,17 +329,21 @@ class FilesController extends MainController
 		    return $this->notAuthorized($request);
 
 	    $file = File::find($id);
-        if (! $file)
+	    if (! $this->setSessionUser($request))
+	    {
+		    $this->setResultError("Not logged in", 401);
+	    }
+	    elseif (! $file)
         {
-            $this->setResultError("File is not found");
+            $this->setResultError("File is not found", 404);
         }
         elseif (! $this->isAllowed($request, 'file', $id, 'update') && ! $this->isModerator())
         {
-            $this->setResultError("Unauthorized action");
+            $this->setResultError("Unauthorized action", 403);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {
@@ -360,21 +368,21 @@ class FilesController extends MainController
 		    return $this->notAuthorized($request);
 
 	    $file = File::find($id);
-        if (! $file)
+	    if (! $this->setSessionUser($request))
+	    {
+		    $this->setResultError("Not logged in", 401);
+	    }
+	    elseif (! $file)
         {
-            $this->setResultError("File is not found");
-        }
-        elseif (! $group)
-        {
-            $this->setResultError("Group name is not found");
+            $this->setResultError("File is not found", 404);
         }
         elseif (! $this->isAllowed($request, 'file', $id, 'update') && ! $this->isModerator())
         {
-            $this->setResultError("Unauthorized action");
+            $this->setResultError("Unauthorized action", 403);
         }
         elseif (! in_array($access, ['read', 'update', 'delete', 'all']))
         {
-            $this->setResultError("Unknown permission '{$access}'");
+            $this->setResultError("Unknown permission '{$access}'", 400);
         }
         else
         {

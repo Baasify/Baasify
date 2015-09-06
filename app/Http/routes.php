@@ -11,15 +11,15 @@
 |
 */
 
-$app->get('me', ['uses' => 'UsersController@getMe']);
+$app->get('user', ['uses' => 'UsersController@getUser']);
 $app->put('user', ['uses' => 'UsersController@putUser']);
-$app->post('login', ['uses' => 'UsersController@postLogin']);
-$app->get('user/{id}', ['uses' => 'UsersController@getUser']);
-$app->post('logout', ['uses' => 'UsersController@postLogout']);
-$app->post('user', ['uses' => 'UsersController@postRegister']);
-$app->put('password', ['uses' => 'UsersController@putPassword']);
+$app->post('user', ['uses' => 'UsersController@postUser']);
+$app->post('user/login', ['uses' => 'UsersController@postLogin']);
+$app->post('user/logout', ['uses' => 'UsersController@postLogout']);
+$app->put('user/password', ['uses' => 'UsersController@putPassword']);
+$app->get('user/{id}', ['uses' => 'UsersController@getUserById']);
 $app->put('user/{id}', ['uses' => 'UsersController@putUserById']);
-$app->put('group/{id}/{group}', ['uses' => 'UsersController@putGroup']);
+$app->put('user/group/{id}/{group}', ['uses' => 'UsersController@putGroup']);
 
 $app->get('collection/{name}', ['uses' => 'CollectionsController@getCollection']);
 $app->post('collection/{name}', ['uses' => 'CollectionsController@postCollection']);
@@ -31,11 +31,10 @@ $app->get('document/{name}/{id}', ['uses' => 'DocumentsController@getDocument'])
 $app->put('document/{name}/{id}', ['uses' => 'DocumentsController@putDocument']);
 $app->delete('document/{name}/{id}', ['uses' => 'DocumentsController@deleteDocument']);
 $app->put('document/{name}/{id}/{access}', ['uses' => 'DocumentsController@putDocumentPublic']);
-
-$app->put('document/{name}/{id}/grant/{access}/user/{user}', ['uses' => 'DocumentsController@putUserPermission']);
-$app->put('document/{name}/{id}/grant/{access}/group/{group}', ['uses' => 'DocumentsController@putGroupPermission']);
-$app->delete('document/{name}/{id}/revoke/{access}/user/{user}', ['uses' => 'DocumentsController@deleteUserPermission']);
-$app->delete('document/{name}/{id}/revoke/{access}/group/{group}', ['uses' => 'DocumentsController@deleteGroupPermission']);
+$app->put('document/{name}/{id}/{access}/user/{user}', ['uses' => 'DocumentsController@putUserPermission']);
+$app->put('document/{name}/{id}/{access}/group/{group}', ['uses' => 'DocumentsController@putGroupPermission']);
+$app->delete('document/{name}/{id}/{access}/user/{user}', ['uses' => 'DocumentsController@deleteUserPermission']);
+$app->delete('document/{name}/{id}/{access}/group/{group}', ['uses' => 'DocumentsController@deleteGroupPermission']);
 
 $app->post('file', ['uses' => 'FilesController@postFile']);
 $app->get('file/{id}', ['uses' => 'FilesController@getFile']);
@@ -44,10 +43,10 @@ $app->get('file/{id}/details', ['uses' => 'FilesController@getDetails']);
 $app->post('file/{document}', ['uses' => 'FilesController@postFileToDocument']);
 $app->put('file/{id}/{access}', ['uses' => 'FilesController@putFilePublic']);
 
-$app->put('file/{id}/grant/{access}/user/{user}', ['uses' => 'FilesController@putUserPermission']);
-$app->put('file/{id}/grant/{access}/group/{group}', ['uses' => 'FilesController@putGroupPermission']);
-$app->delete('file/{id}/revoke/{access}/user/{user}', ['uses' => 'FilesController@deleteUserPermission']);
-$app->delete('file/{id}/revoke/{access}/group/{group}', ['uses' => 'FilesController@deleteGroupPermission']);
+$app->put('file/{id}/{access}/user/{user}', ['uses' => 'FilesController@putUserPermission']);
+$app->put('file/{id}/{access}/group/{group}', ['uses' => 'FilesController@putGroupPermission']);
+$app->delete('file/{id}/{access}/user/{user}', ['uses' => 'FilesController@deleteUserPermission']);
+$app->delete('file/{id}/{access}/group/{group}', ['uses' => 'FilesController@deleteGroupPermission']);
 
 $app->post('push', ['uses' => 'PushController@postPush']);
 $app->put('push/{platform}', ['uses' => 'PushController@putDevice']);
