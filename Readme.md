@@ -23,7 +23,7 @@ Baasify is an open source backend-as-a-service in its early stage. Built on [Lum
 3. Go to your Baasify directory and type:
  
 ```bash
-composer update
+composer install
 php artisan migrate
 php artisan db:seed
 ```
