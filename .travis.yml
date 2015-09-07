@@ -9,6 +9,7 @@ env:
 before_script:
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS baasify;" -uroot; fi
   - mv .env.example .env
-  - composer update
+  - composer self-update
+  - composer install
 
 script: phpunit --configuration phpunit_$DB.xml --coverage-text
